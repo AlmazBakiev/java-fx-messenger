@@ -12,6 +12,8 @@ public class ChatClient {
     private DataOutputStream out;
 
     private final ChatController controller;
+    private boolean isActive;
+    private final int TIME_FOR_AUTH = 120;
 
     public ChatClient(ChatController controller) {
         this.controller = controller;
@@ -34,9 +36,27 @@ public class ChatClient {
     }
 
     private void waitAuth() throws IOException {
+        Thread thread = new Thread(() -> {
+            for (int i = TIME_FOR_AUTH; i >= 0; i--) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                controller.timeForAuth(i);
+                if (i == 0) {
+                    closeConnection();
+                }
+                if (isActive) {
+                    break;
+                }
+            }
+        });
+        thread.start();
         while (true) {
             String message = in.readUTF();
             if (message.startsWith("/authok")) {
+                disable();
                 String[] split = message.split("\\p{Blank}+");
                 String nick = split[1];
                 controller.setAuth(true);
@@ -44,6 +64,11 @@ public class ChatClient {
                 break;
             }
         }
+        thread.interrupt();
+    }
+
+    private void disable() {
+        isActive = true;
     }
 
     private void closeConnection() {

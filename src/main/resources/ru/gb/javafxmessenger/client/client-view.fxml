@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="ru.gb.javafxmessenger.client.ChatController">
     <padding>
@@ -10,6 +11,11 @@
     </padding>
     <VBox>
         <HBox fx:id="authBox">
+            <HBox spacing="10">
+                <Text text="У вас"/>
+                <TextField fx:id="timeForAuth" maxWidth="40" maxHeight="10" editable="false"/>
+                <Text text="секунд для авторизации."/>
+            </HBox>
             <TextField fx:id="loginField" promptText="login"/>
             <PasswordField fx:id="passField" promptText="password"/>
             <Button text="Sign in" onAction="#signingBtnClick"/>

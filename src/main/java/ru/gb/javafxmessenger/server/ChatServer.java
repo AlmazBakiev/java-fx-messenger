@@ -53,13 +53,13 @@ public class ChatServer {
         clients.remove(client);
     }
 
-    public void privateMessage(String sender, String message, String recipient) {
+    public void privateMessage(String recipient, String message, String sender) {
         for (ClientHandler client : clients) {
             if (client.getNick().equals(recipient)) {
-                client.sendMessage(recipient + ": " + message);
+                client.sendMessage("Личное сообщение от " + sender + ": " + message);
             }
             if (client.getNick().equals(sender)) {
-                client.sendMessage(recipient + ": " + message);
+                client.sendMessage("Вы отправили сообщение пользователю " + recipient + ": " + message);
             }
         }
     }

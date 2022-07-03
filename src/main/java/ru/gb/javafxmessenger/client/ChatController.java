@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public class ChatController {
     @FXML
+    public TextField timeForAuth;
+    @FXML
     private HBox authBox;
     @FXML
     private TextField loginField;
@@ -75,5 +77,10 @@ public class ChatController {
 
     public void signingBtnClick() {
         client.sendMessage("/auth " + loginField.getText() + " " + passField.getText());
+    }
+
+    public void timeForAuth(int time) {
+        timeForAuth.clear();
+        timeForAuth.appendText("" + time);
     }
 }
