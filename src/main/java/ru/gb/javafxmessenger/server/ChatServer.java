@@ -13,12 +13,12 @@ public class ChatServer {
 
     public ChatServer() {
         this.clients = new ArrayList<>();
-        this.authService = new InMemoryAuthService();
+        this.authService = new SQLAuthService();
     }
 
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(8189);
-             AuthService authService = new InMemoryAuthService()) {
+             AuthService authService = new SQLAuthService()) {
             while (true) {
                 System.out.println("Ожидаю подключения...");
                 Socket socket = serverSocket.accept();

@@ -100,12 +100,17 @@ public class ClientHandler {
         while (true) {
             try {
                 String message = in.readUTF();
-                if ("/end".equals(message)) {
+                if ("/end".equalsIgnoreCase(message)) {
                     break;
                 }
                 String[] split = message.split("\\p{Blank}+", 3);
-                if ("/w".equals(split[0])) {
+                if ("/w".equalsIgnoreCase(split[0])) {
                     server.privateMessage(split[1], split[2], nick);
+                    continue;
+                }
+                if ("/change".equalsIgnoreCase(split[0])) {
+                    server.broadcast("Пользовалетль, " + nick + ", сменил ник на " + split[1]);
+                    nick = ((SQLAuthService) authService).changeNickName(nick, split[1]);
                     continue;
                 }
                 server.broadcast(nick + ": " + message);

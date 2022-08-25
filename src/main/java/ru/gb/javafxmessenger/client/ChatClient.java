@@ -64,7 +64,7 @@ public class ChatClient {
                 break;
             }
         }
-        thread.interrupt();
+        Thread.currentThread().isInterrupted();
     }
 
     private void disable() {
