@@ -49,11 +49,32 @@ public class SQLAuthService implements AuthService {
         return null;
     }
 
+    public String getLogin(String nickName) {
+        try {
+            ResultSet rs = statement.executeQuery(
+                    "select login from auth where nick_name = '" + nickName + "'");
+            return rs.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    protected static ResultSet readTable() {
+        try {
+            return statement.executeQuery("select login, nick_name from auth;");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public void close() throws IOException {
         if (connection != null) {
             try {
                 connection.close();
+                statement.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
