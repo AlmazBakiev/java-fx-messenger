@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class ChatController {
     @FXML
-    public TextField timeForAuth;
+    public volatile TextField timeForAuth;
     @FXML
     private HBox authBox;
     @FXML
@@ -80,7 +80,7 @@ public class ChatController {
     }
 
     public void timeForAuth(int time) {
-        timeForAuth.clear();
+        timeForAuth.setText("");
         timeForAuth.appendText("" + time);
     }
 }
