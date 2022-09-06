@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 public class ClientHandler {
     private Socket socket;
@@ -23,11 +24,29 @@ public class ClientHandler {
             new Thread(() -> {
                 try {
                     authenticate();
+                    restorationMessages();
                     readMessage();
                 } finally {
                     closeConnection();
                 }
             }).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void restorationMessages() {
+        List<String> list = server.restorationMessages(this.nick);
+        try {
+            if (list.size() < 100) {
+                for (int i = 0; i < list.size(); i++) {
+                    out.writeUTF(list.get(i));
+                }
+            } else {
+                for (int i = list.size() - 100; i < list.size(); i++) {
+                    out.writeUTF(list.get(i));
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,7 +68,6 @@ public class ClientHandler {
                         }
                         sendMessage("/authok " + nick);
                         this.nick = nick;
-                        server.broadcast("Пользовалель " + nick + " зашел в чат");
                         server.subscribe(this);
                         break;
                     } else {
@@ -86,6 +104,11 @@ public class ClientHandler {
                 e.printStackTrace();
             }
         }
+        try {
+            authService.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendMessage(String message) {
@@ -109,11 +132,10 @@ public class ClientHandler {
                     continue;
                 }
                 if ("/change".equalsIgnoreCase(split[0])) {
-                    server.broadcast("Пользовалетль, " + nick + ", сменил ник на " + split[1]);
                     nick = ((SQLAuthService) authService).changeNickName(nick, split[1]);
                     continue;
                 }
-                server.broadcast(nick + ": " + message);
+                server.broadcastAndWriteHistory(nick + ": " + message);
             } catch (IOException e) {
                 e.printStackTrace();
             }

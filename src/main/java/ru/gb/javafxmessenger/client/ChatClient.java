@@ -12,7 +12,6 @@ public class ChatClient {
     private DataOutputStream out;
 
     private final ChatController controller;
-    private boolean isActive;
     private final int TIME_FOR_AUTH = 120;
 
     public ChatClient(ChatController controller) {
@@ -37,18 +36,19 @@ public class ChatClient {
 
     private void waitAuth() throws IOException {
         Thread thread = new Thread(() -> {
+            boolean interrupted = false;
             for (int i = TIME_FOR_AUTH; i >= 0; i--) {
+                if (Thread.currentThread().isInterrupted() || interrupted) {
+                    break;
+                }
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    interrupted = true;
                 }
                 controller.timeForAuth(i);
                 if (i == 0) {
                     closeConnection();
-                }
-                if (isActive) {
-                    break;
                 }
             }
         });
@@ -56,19 +56,12 @@ public class ChatClient {
         while (true) {
             String message = in.readUTF();
             if (message.startsWith("/authok")) {
-                disable();
+                thread.interrupt();
                 String[] split = message.split("\\p{Blank}+");
-                String nick = split[1];
                 controller.setAuth(true);
-                controller.addMessage("Успешная авторизация под ником " + nick);
                 break;
             }
         }
-        Thread.currentThread().isInterrupted();
-    }
-
-    private void disable() {
-        isActive = true;
     }
 
     private void closeConnection() {
