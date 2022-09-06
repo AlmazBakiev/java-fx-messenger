@@ -1,5 +1,7 @@
 package ru.gb.javafxmessenger.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,6 +20,7 @@ public class ChatServer {
     private final List<ClientHandler> clients;
     private final AuthService authService;
     private final Map<String, Path> clientsPaths = new HashMap<>();
+    private static final Logger log = LoggerFactory.getLogger("file");
 
     public ChatServer() {
         this.clients = new ArrayList<>();
@@ -27,19 +30,22 @@ public class ChatServer {
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(8189);
              AuthService authService = new SQLAuthService()) {
+            log.info("Сервер запущен");
             createMessageHistoryFile();
             while (true) {
                 System.out.println("Ожидаю подключения...");
                 Socket socket = serverSocket.accept();
                 new ClientHandler(socket, this, authService);
+                log.info("Клиент подключился");
                 System.out.println("Клиент подключен.");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Произошла ошибка");
         }
     }
 
     public void broadcastAndWriteHistory(String message) {
+        log.trace("Клиент прислал сообщение");
         clients.forEach(client -> client.sendMessage(message));
         clientsPaths.forEach((nick, path) -> {
             try {
@@ -68,6 +74,7 @@ public class ChatServer {
     }
 
     public void privateMessage(String recipient, String message, String sender) {
+        log.trace("Клиент прислал личное сообщение");
         clients.forEach(client -> {
             if (client.getNick().equals(recipient)) {
                 client.sendMessage("Личное сообщение от " + sender + ": " + message);
@@ -121,13 +128,15 @@ public class ChatServer {
             while (rs.next()) {
                 String nickName = rs.getString(2);
                 String login = rs.getString(1);
-                clientsPaths.put(rs.getString(2), Path.of(
+                clientsPaths.put(nickName, Path.of(
                         "D:\\Java prog\\java-fx-messenger\\src\\main\\resources\\history\\history_" +
-                                rs.getString(1) + ".txt"));
+                                login + ".txt"));
             }
+            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     public List<String> restorationMessages(String nick) {

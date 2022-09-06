@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
 
 public class ChatClient {
 
@@ -42,7 +41,6 @@ public class ChatClient {
                 if (Thread.currentThread().isInterrupted() || interrupted) {
                     break;
                 }
-                System.out.println(Thread.currentThread().getName());
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

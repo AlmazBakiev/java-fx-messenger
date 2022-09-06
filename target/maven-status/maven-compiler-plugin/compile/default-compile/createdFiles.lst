@@ -1,0 +1,11 @@
+ru\gb\javafxmessenger\server\AuthService.class
+ru\gb\javafxmessenger\server\SQLAuthService.class
+ru\gb\javafxmessenger\server\InMemoryAuthService$UserData.class
+ru\gb\javafxmessenger\server\InMemoryAuthService.class
+ru\gb\javafxmessenger\server\ServerLauncher.class
+ru\gb\javafxmessenger\client\ChatClient.class
+ru\gb\javafxmessenger\client\ChatClientApp.class
+ru\gb\javafxmessenger\server\ClientHandler.class
+ru\gb\javafxmessenger\server\ChatServer.class
+module-info.class
+ru\gb\javafxmessenger\client\ChatController.class
